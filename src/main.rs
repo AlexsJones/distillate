@@ -35,8 +35,14 @@ async fn run(options_path: String) -> Result<()> {
             return Ok(());
         }
         for path in configuration.watch_paths {
-            debug!("watching path: {}", path);
-            watcher.watch(Path::new(&path), RecursiveMode::Recursive)?;
+            debug!("watching path: {}", path.path);
+
+            let recursion = if path.recursive {
+                RecursiveMode::Recursive
+            } else {
+                RecursiveMode::NonRecursive
+            };
+            watcher.watch(Path::new(&path.path), recursion)?;
         }
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(1)).await;

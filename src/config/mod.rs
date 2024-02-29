@@ -1,8 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+pub struct PathWatch{
+    pub path: String,
+    pub recursive: bool,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct Configuration {
-    pub watch_paths: Vec<String>,
+    pub watch_paths: Vec<PathWatch>,
 }
 
 pub fn load_config(path: &str) -> Result<Configuration, Box<dyn std::error::Error>> {
