@@ -1,13 +1,20 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
-pub struct PathWatch{
+#[derive(Serialize, Deserialize,Clone)]
+pub struct AlertOn {
+    pub path: String,
+    pub event_type: String,
+}
+#[derive(Serialize, Deserialize,Clone)]
+pub struct PathWatch {
     pub path: String,
     pub recursive: bool,
+    pub alert_on: Vec<AlertOn>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Clone)]
 pub struct Configuration {
+    pub fuzzy_paths: bool,
     pub watch_paths: Vec<PathWatch>,
 }
 

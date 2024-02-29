@@ -1,3 +1,14 @@
+# Distillate
+
+## Usage
+
+```
+distillate run --options-path=distillate.config
+```
+
+Example configuration
+
+```
 {
     "fuzzy_paths": true,
     "watch_paths": [{
@@ -6,8 +17,9 @@
     "alert_on": [
         {
             "event_type": "create",
-            "path": "hosts"
+            "path": "/etc/hosts"
         }
     ]
     }]
-}   
+} 
+```

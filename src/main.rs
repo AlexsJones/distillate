@@ -1,9 +1,10 @@
-use std::path::Path;
-use notify::{Watcher, RecursiveMode, Result};
-use clap:: { Parser, Subcommand};
+use clap::{Parser, Subcommand};
 use log::debug;
+use notify::{RecursiveMode, Result, Watcher};
+use std::path::Path;
 
 mod config;
+mod processor;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
@@ -13,40 +14,41 @@ struct Args {
 }
 #[derive(Subcommand, Debug)]
 enum SubCommands {
-    Run{
-        #[clap(short, long,required = true)]
+    Run {
+        #[clap(short, long, required = true)]
         options_path: String,
-    }
+    },
 }
 
 async fn run(options_path: String) -> Result<()> {
+    let configuration = config::load_config(&options_path).unwrap();
+    if configuration.watch_paths.len() == 0 {
+        println!("No paths to watch");
+        return Ok(());
+    }
+    // Build the processor
+    let processor = processor::Processor::new(configuration.clone());
 
-        // Automatically select the best implementation for your platform.
-        let mut watcher = notify::recommended_watcher(|res| {
-            match res {
-               Ok(event) => debug!("event: {:?}", event),
-               Err(e) => debug!("watch error: {:?}", e),
-            }
-        })?;
-        
-        let configuration = config::load_config(&options_path).unwrap();
-        if configuration.watch_paths.len() == 0 {
-            println!("No paths to watch");
-            return Ok(());
+    // Automatically select the best implementation for your platform.
+    let mut watcher = notify::recommended_watcher(move |res| {
+        if let Ok(event) = res {
+            processor.process_event(event);
         }
-        for path in configuration.watch_paths {
-            debug!("watching path: {}", path.path);
+    })?;
 
-            let recursion = if path.recursive {
-                RecursiveMode::Recursive
-            } else {
-                RecursiveMode::NonRecursive
-            };
-            watcher.watch(Path::new(&path.path), recursion)?;
-        }
-        loop {
-            tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-        }
+    for path in configuration.watch_paths {
+        debug!("watching path: {}", path.path);
+
+        let recursion = if path.recursive {
+            RecursiveMode::Recursive
+        } else {
+            RecursiveMode::NonRecursive
+        };
+        watcher.watch(Path::new(&path.path), recursion)?;
+    }
+    loop {
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+    }
 }
 
 #[tokio::main]
