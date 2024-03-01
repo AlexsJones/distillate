@@ -5,6 +5,7 @@ use std::path::Path;
 
 mod config;
 mod processor;
+mod sink;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about=None)]
