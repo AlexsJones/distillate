@@ -3,6 +3,11 @@
 Distillate will watch filesystem resources and notify on changes to selected resources.
 The typical usecase would be to monitor for tampering of critical system files.
 
+## Installation
+```
+cargo install distillate
+```
+
 ## Usage
 
 ```
