@@ -2,7 +2,7 @@ use crate::config::Configuration;
 use std::{fs::OpenOptions, io::Write};
 use chrono;
 pub struct Sink {
-    config: Configuration,
+    _config: Configuration,
     file: std::fs::File,
 }
 
@@ -18,13 +18,13 @@ impl Sink {
         .unwrap();
 
         Sink {
-            config: config,
+            _config: config,
             file: file,
         }
     }
     pub fn emit(&self, message: String) {
         // Write message to self.config.sink.log_path
-        // There is far more performant code to do this than I can write, so lets leverage that
+       
         if let Err(e) = writeln!(&self.file, "[{:?}]{}",chrono::offset::Local::now(), message) {
             eprintln!("Couldn't write to file: {}", e);
         }
