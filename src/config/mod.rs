@@ -1,8 +1,13 @@
 use serde::{Deserialize, Serialize};
-
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Webhook {
+    pub url: String,
+    pub method: String,
+}
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Sink {
     pub log_path: String,
+    pub webhook: Webhook,
 }
 #[derive(Serialize, Deserialize, Clone)]
 pub struct AlertOn {

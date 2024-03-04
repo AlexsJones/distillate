@@ -1,6 +1,6 @@
 use crate::config;
-use log::{debug, info};
 use crate::sink::Sink;
+use log::{debug, info};
 
 pub struct Processor {
     configuration: config::Configuration,
@@ -25,7 +25,7 @@ impl Processor {
         };
         event_type.to_string()
     }
-    pub fn process_event(&self, event: notify::Event) {
+    pub async fn process_event(&self, event: notify::Event) {
         debug!("event: {:?}", event);
 
         // filter based on the event path
@@ -59,11 +59,22 @@ impl Processor {
             if path_str.contains(&alert.path) || alert.path == "*" {
                 let event_type = self.map_event_type(&event);
                 if alert.event_type == event_type {
-                    info!(
+                    debug!(
                         "alert detected for path: {:?} and event: {:?}",
                         path_str, event_type
                     );
-                    self.sink.emit(format!("{:?} event detected on path {:?}", event_type, path_str))
+                    let res = self.sink.emit(format!(
+                        "{:?} event detected on path {:?}",
+                        event_type, path_str
+                    )).await;
+                    match res {
+                        Ok(_) => {
+                            info!("sink sent");
+                        }
+                        Err(e) => {
+                            eprintln!("error sending alert: {:?}", e);
+                        }
+                    }
                 }
             }
         }
