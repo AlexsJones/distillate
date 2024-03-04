@@ -36,7 +36,15 @@ Example configuration
 ```
 Example monitoring output 
 ```
-[2024-03-01T11:17:00.053856+00:00]"create" event detected on path "/private/etc/1"
-[2024-03-01T11:17:01.271469+00:00]"create" event detected on path "/private/etc/1"
-[2024-03-01T11:17:01.271617+00:00]"remove" event detected on path "/private/etc/1"
+[2024-03-04T08:22:54.649610+00:00]"create" event detected on path "/Users/axjns/Library/Application Support/dev.warp.Warp-Stable/warp.sqlite-journal"
+```
+
+_Post request to remote receiver_
+```
+POST / HTTP/1.1
+accept: */*
+host: localhost:8080
+content-length: 115
+
+"remove" event detected on path "/Users/axjns/Library/Application Support/dev.warp.Warp-Stable/warp.sqlite-journal"
 ```
